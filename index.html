@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Corrida dos Presentes — modo loop</title>
+<style>
+:root{--scale:1}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050b1c;font-family:Arial,Helvetica,sans-serif;color:#fff}
+#stage{position:absolute;left:50%;top:50%;height:min(100vh,177.7778vw);width:min(56.25vh,100vw);transform:translate(-50%,-50%);overflow:hidden;background:#1383ee;container-type:size}
+.sky{position:absolute;inset:0 0 57% 0;background:linear-gradient(#0874ed,#68c9ff 72%,#e7f8ff);overflow:hidden}
+.cloud{position:absolute;background:#fff;border-radius:999px;filter:drop-shadow(0 3px 0 #c2e6ff);height:3.5%;width:28%;top:16%;left:-30%;animation:cloudmove 22s linear infinite}
+.cloud:before,.cloud:after{content:"";position:absolute;background:#fff;border-radius:50%;bottom:20%;width:42%;height:150%;left:18%}.cloud:after{left:48%;height:120%;width:38%}
+.cloud.c2{top:32%;width:35%;animation-duration:31s;animation-delay:-12s;transform:scale(.7)}
+.cloud.c3{top:8%;width:22%;animation-duration:26s;animation-delay:-8s;transform:scale(.8)}
+@keyframes cloudmove{to{left:110%}}
+.sun{position:absolute;right:8%;top:5%;width:10%;aspect-ratio:1;border-radius:50%;background:#ffe98b;box-shadow:0 0 45px #fff7ad}
+.lights{position:absolute;top:22%;left:0;width:100%;height:13%;display:flex;justify-content:space-around;align-items:flex-start}
+.lightpole{height:100%;width:2%;background:#455a78;position:relative}
+.lightpole:before{content:"";position:absolute;left:-150%;top:0;width:400%;height:16%;border:3px solid #d7e8ff;border-radius:4px;background:repeating-linear-gradient(90deg,#fff 0 5%,#8ba5c8 6% 9%);box-shadow:0 0 14px #fff}
+.flagrow{position:absolute;top:35%;width:100%;height:6%;display:flex;justify-content:space-around}
+.flag{width:4%;height:60%;background:#19a85b;clip-path:polygon(0 0,100% 15%,55% 50%,100% 85%,0 100%);position:relative}
+.flag:after{content:"";position:absolute;inset:25%;background:#ffe74e;transform:rotate(45deg)}
+.stands{position:absolute;top:39%;height:22%;width:100%;background:repeating-linear-gradient(0deg,#164b93 0 8%,#e5f5ff 8.5% 9%,#1c3970 9.5% 17%);overflow:hidden;border-top:5px solid #e6f6ff;border-bottom:7px solid #d6f1ff}
+.crowd{position:absolute;inset:0;background-image:radial-gradient(circle,#ffcf35 0 1.5px,transparent 2px),radial-gradient(circle,#ff4b43 0 1.6px,transparent 2.2px),radial-gradient(circle,#e8f7ff 0 1.5px,transparent 2px),radial-gradient(circle,#15d7cf 0 1.5px,transparent 2px),radial-gradient(circle,#ff8bd1 0 1.5px,transparent 2px);background-size:13px 15px,17px 19px,11px 17px,19px 16px,15px 18px;background-position:0 0,5px 8px,4px 3px,10px 2px,7px 11px}
+.track{position:absolute;top:59%;height:24%;width:100%;background:repeating-linear-gradient(0deg,#e94732 0 12%,#f65c42 12% 24%);border-top:8px solid #f7f7f7;border-bottom:8px solid #f7f7f7;overflow:hidden}
+.lane{position:absolute;left:0;width:100%;height:2px;background:#ffe5d8;opacity:.9}
+.lane:nth-child(1){top:23%}.lane:nth-child(2){top:47%}.lane:nth-child(3){top:71%}.lane:nth-child(4){top:94%}
+.tracklines{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 17%,#fff 17.2% 18.5%,transparent 18.7% 100%);opacity:.17;animation:trackscroll .6s linear infinite}
+@keyframes trackscroll{to{background-position:-30% 0}}
+.adboard{position:absolute;top:55%;height:4%;width:100%;background:#123d9a;border:3px solid #fff;display:flex;align-items:center;justify-content:space-around;font-size:2.1cqw;font-weight:900;letter-spacing:.05em}
+.hud{position:absolute;top:1%;left:2%;width:96%;z-index:20}
+.logo{font-size:5cqw;font-weight:1000;line-height:.92;text-shadow:2px 3px #07317d;letter-spacing:-.04em}
+.logo span{color:#ffe522;display:block;font-size:6cqw}
+.timer{position:absolute;right:1%;top:0;background:#071631;border:3px solid #f4f7ff;box-shadow:0 0 0 3px #0b2d70 inset;padding:1.1% 3%;font-weight:1000;font-size:5.2cqw;color:#ffe52d;text-shadow:2px 2px #8a4d00}
+.board{margin-top:2%;background:#071a40eF;border:3px solid white;border-radius:8px;padding:2%;box-shadow:0 0 0 3px #184f9d inset}
+.rowbar{height:10cqw;display:flex;align-items:center;gap:2%;margin:1% 0}
+.place{width:8%;height:75%;display:grid;place-items:center;background:#ffe72b;color:#09152d;font-weight:1000;border:2px solid white;font-size:3.5cqw}
+.num{font-size:4cqw;font-weight:1000;padding:1% 2%;border-radius:5px;background:#ec263b;border:2px solid white}
+.num.green{background:#19a34b}
+.bar{height:30%;flex:1;background:#101d39;border:2px solid #5c7396;position:relative;overflow:hidden}
+.fill{height:100%;width:40%;background:linear-gradient(#ff6670,#e40b2d);transition:width .25s}
+.fill.green{background:linear-gradient(#8aff8c,#0aa94a)}
+.portrait{font-size:6cqw;width:12%;text-align:center;background:#e6b37c;border:2px solid #fff}
+.stats{width:17%;text-align:center;font-weight:900;font-size:3.6cqw}
+.stats small{display:block;font-size:2.6cqw}
+.goal{margin:2% 0 0 auto;width:55%;background:#071733;border:3px solid white;padding:2%;font-size:2.7cqw;font-weight:900;display:flex;align-items:center;gap:3%;box-shadow:0 0 0 3px #123f8b inset}
+.heart{font-size:7cqw}.goal strong{font-size:4cqw;color:#ffe72b}
+.runners{position:absolute;top:59%;height:24%;width:100%;z-index:10}
+.runner{position:absolute;width:39%;height:90%;bottom:0;left:var(--x);transition:left .22s linear;filter:drop-shadow(0 6px 2px #4e1723)}
+.runner.lula{--shirt:#e51e2c;--trim:#fff;z-index:2}
+.runner.flavio{--shirt:#13b84f;--trim:#ffe52b;z-index:3;transform:scale(.84);transform-origin:bottom center}
+.runner .head{position:absolute;left:37%;top:2%;width:27%;height:22%;border-radius:44% 44% 40% 40%;background:linear-gradient(90deg,#b76c43,#ffd0a0 45%,#bd734d);border:2px solid #633b29;z-index:5}
+.head:before{content:"";position:absolute;left:-4%;top:9%;width:108%;height:26%;background:var(--hair,#eee);border-radius:40%}
+.head:after{content:"";position:absolute;left:10%;top:45%;width:80%;height:17%;background:#fff;border-radius:0 0 50% 50%}
+.lula .head{--hair:#f4f0df}
+.lula .head .band{position:absolute;top:7%;left:-6%;width:112%;height:22%;background:#e31b31;border-radius:3px;z-index:3}
+.flavio .head{--hair:#4b392a}
+.glasses{position:absolute;left:7%;top:36%;width:86%;height:22%;border-top:2px solid #181b20;z-index:4}
+.glasses:before,.glasses:after{content:"";position:absolute;top:0;width:40%;height:100%;border:2px solid #171b22;border-radius:4px;background:#8dd4e755}
+.glasses:after{right:0}
+.torso{position:absolute;left:29%;top:24%;width:40%;height:38%;background:var(--shirt);border:3px solid var(--trim);border-radius:20% 20% 14% 14%;transform:rotate(-8deg);z-index:3}
+.torso:after{content:"";position:absolute;left:44%;top:0;height:100%;width:7%;background:var(--trim)}
+.star{position:absolute;left:49%;top:28%;color:white;font-size:6cqw;z-index:4}
+.shorts{position:absolute;left:30%;top:58%;width:41%;height:17%;background:#161c29;border:2px solid #222;border-radius:8%;z-index:3}
+.leg{position:absolute;top:68%;width:13%;height:28%;background:var(--skin,#d79a70);border:3px solid #7e543d;border-radius:20px;transform-origin:top center;z-index:2}
+.leg.one{left:36%;animation:leg1 .42s ease-in-out infinite alternate}
+.leg.two{left:55%;animation:leg2 .42s ease-in-out infinite alternate}
+.arm{position:absolute;top:31%;width:12%;height:31%;background:var(--skin,#d79a70);border:3px solid #7e543d;border-radius:20px;transform-origin:top center;z-index:4}
+.arm.one{left:26%;animation:arm1 .42s ease-in-out infinite alternate}
+.arm.two{left:62%;animation:arm2 .42s ease-in-out infinite alternate}
+.shoe{position:absolute;bottom:-3%;left:-35%;width:170%;height:16%;background:#f2f3f5;border:3px solid #343e54;border-radius:50% 25% 25% 30%}
+.flavio .shoe{background:#b6ff38}
+.lula .shoe{background:#fff}
+@keyframes leg1{from{transform:rotate(38deg)}to{transform:rotate(-45deg)}}
+@keyframes leg2{from{transform:rotate(-45deg)}to{transform:rotate(38deg)}}
+@keyframes arm1{from{transform:rotate(-42deg)}to{transform:rotate(45deg)}}
+@keyframes arm2{from{transform:rotate(45deg)}to{transform:rotate(-42deg)}}
+.runner{animation:bob .21s ease-in-out infinite alternate}
+@keyframes bob{from{margin-bottom:0}to{margin-bottom:1.3%}}
+.tag{position:absolute;top:-1%;left:28%;background:#ed2438;border:3px solid white;border-radius:7px;padding:1% 3%;font-size:4cqw;font-weight:1000;z-index:9;white-space:nowrap}
+.flavio .tag{background:#12a94b}
+.controls{position:absolute;bottom:1.5%;left:2%;width:96%;z-index:30;display:grid;grid-template-columns:1fr 1fr;gap:2%}
+button{border:3px solid #fff;border-radius:10px;padding:4% 2%;font-weight:1000;font-size:3.4cqw;box-shadow:0 4px 0 #0a255d;cursor:pointer}
+.rose{background:linear-gradient(#ff6b00,#e32a00);color:white}.white{background:linear-gradient(#fff4a4,#f5bd14);color:#09205b}
+.smallbuttons{grid-column:1/3;display:grid;grid-template-columns:repeat(4,1fr);gap:2%}
+.smallbuttons button{background:#0b2e67;color:white;padding:3% 0;font-size:3cqw}
+.notice{position:absolute;top:49%;left:50%;transform:translate(-50%,-50%);z-index:50;background:#07152b;border:3px solid white;border-radius:10px;padding:3%;font-size:4cqw;font-weight:1000;display:none;text-align:center;width:85%}
+.notice.show{display:block}
+.finish{position:absolute;top:60%;right:-2%;height:22%;width:4%;background:repeating-linear-gradient(0deg,#fff 0 8px,#111 8px 16px);z-index:8}
+.footer{position:absolute;bottom:0;height:2%;width:100%;background:#147c35;border-top:4px solid #e5fff1}
+@media (prefers-reduced-motion:reduce){.runner,.leg,.arm,.tracklines,.cloud{animation-duration:2s}}
+</style>
+</head>
+<body>
+<div id="stage">
+ <div class="sky"><div class="sun"></div><div class="cloud"></div><div class="cloud c2"></div><div class="cloud c3"></div></div>
+ <div class="lights"><i class="lightpole"></i><i class="lightpole"></i><i class="lightpole"></i><i class="lightpole"></i></div>
+ <div class="flagrow"><i class="flag"></i><i class="flag"></i><i class="flag"></i><i class="flag"></i><i class="flag"></i><i class="flag"></i></div>
+ <div class="stands"><div class="crowd"></div></div>
+ <div class="adboard">🏁 CORRIDA DOS PRESENTES　 🇧🇷　 AO VIVO　 👑</div>
+ <div class="track"><div class="tracklines"></div><div class="lane"></div><div class="lane"></div><div class="lane"></div><div class="lane"></div></div>
+ <div class="hud">
+  <div class="logo">🎁 CORRIDA DOS <span>PRESENTES</span></div><div class="timer" id="timer">03:20</div>
+  <div class="board">
+   <div class="rowbar"><div class="place" id="placeL">1º</div><div class="num">13</div><div class="bar"><div class="fill" id="fillL"></div></div><div class="portrait">👴🏻</div><div class="stats" id="statL">80%<small>28 KM/H</small></div></div>
+   <div class="rowbar"><div class="place" id="placeF">2º</div><div class="num green">22</div><div class="bar"><div class="fill green" id="fillF"></div></div><div class="portrait">👓</div><div class="stats" id="statF">78%<small>27 KM/H</small></div></div>
+  </div>
+  <div class="goal"><span class="heart">🌹</span><div>META DE PRESENTES<br><strong id="goalCount">0/50</strong></div><div style="flex:1;height:9px;background:#152c53;border:1px solid #fff"><div id="goalFill" style="width:0;height:100%;background:#ff477c"></div></div></div>
+ </div>
+ <div class="runners">
+  <div class="runner lula" id="runnerL" style="--x:8%">
+   <div class="tag">👴🏻 13</div><div class="head"><div class="band"></div></div><div class="torso"></div><div class="star">★</div><div class="arm one"></div><div class="arm two"></div><div class="shorts" style="background:#d91d2c"></div><div class="leg one"><div class="shoe"></div></div><div class="leg two"><div class="shoe"></div></div>
+  </div>
+  <div class="runner flavio" id="runnerF" style="--x:38%">
+   <div class="tag">👓 22</div><div class="head"><div class="glasses"></div></div><div class="torso"></div><div class="arm one"></div><div class="arm two"></div><div class="shorts"></div><div class="leg one"><div class="shoe"></div></div><div class="leg two"><div class="shoe"></div></div>
+  </div>
+ </div>
+ <div class="finish"></div>
+ <div class="notice" id="notice"></div>
+ <div class="controls">
+  <button class="rose" onclick="boost('L')">🌹 ROSA → LULA + IMPULSO</button>
+  <button class="white" onclick="boost('F')">♡ ROSA BRANCA → FLÁVIO</button>
+  <div class="smallbuttons"><button onclick="boost('L',5)">⚡ +5s</button><button onclick="boost('F',5)">⚡ +5s</button><button onclick="boost('L',10)">💗 +10s</button><button onclick="resetRace()">↻ REINICIAR</button></div>
+ </div>
+ <div class="footer"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+let duration=200, remaining=duration, elapsed=0, distL=0.18, distF=0.23, speedL=.00038, speedF=.00040, boostL=0,boostF=0,gifts=0,finished=false,last=performance.now();
+function format(s){s=Math.max(0,Math.ceil(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function show(msg){$('notice').textContent=msg;$('notice').classList.add('show');setTimeout(()=>$('notice').classList.remove('show'),1800)}
+function boost(who,amount){if(finished)return; if(who==='L'){boostL=Math.min(boostL+.00045,.0018);distL=Math.min(.91,distL+.025); }else{boostF=Math.min(boostF+.00045,.0018);distF=Math.min(.91,distF+.025);} gifts++;$('goalCount').textContent=gifts+'/50';$('goalFill').style.width=Math.min(100,gifts*2)+'%';show((who==='L'?'🌹 ROSA! Lula ganhou velocidade':'🤍 ROSA BRANCA! Flávio ganhou velocidade'));}
+function resetRace(){remaining=duration;elapsed=0;distL=.18;distF=.23;speedL=.00038;speedF=.00040;boostL=0;boostF=0;gifts=0;finished=false;$('goalCount').textContent='0/50';$('goalFill').style.width='0%';$('runnerL').style.setProperty('--x','8%');$('runnerF').style.setProperty('--x','38%');show('🏁 NOVA CORRIDA!')}
+function frame(now){let dt=Math.min(50,now-last);last=now;if(!finished){remaining-=dt/1000;elapsed+=dt/1000;distL+=dt*(speedL+boostL);distF+=dt*(speedF+boostF);boostL*=.985;boostF*=.985;
+if(distL>=.92||distF>=.92){finished=true;show(distL>distF?'🏆 LULA VENCEU!':'🏆 FLÁVIO BOLSONARO VENCEU!');setTimeout(resetRace,5000)}
+if(remaining<=0&&!finished){finished=true;show(distL>distF?'🏆 LULA VENCEU!':'🏆 FLÁVIO BOLSONARO VENCEU!');setTimeout(resetRace,5000)}
+$('timer').textContent=format(remaining);
+$('runnerL').style.setProperty('--x',(Math.min(82,distL*88))+'%');$('runnerF').style.setProperty('--x',(Math.min(82,distF*88))+'%');
+$('fillL').style.width=Math.min(100,distL*100)+'%';$('fillF').style.width=Math.min(100,distF*100)+'%';
+$('statL').innerHTML=Math.round(distL*100)+'%<small>'+Math.round(25+boostL*90000)+' KM/H</small>';$('statF').innerHTML=Math.round(distF*100)+'%<small>'+Math.round(25+boostF*90000)+' KM/H</small>';
+if(distL>=distF){$('placeL').textContent='1º';$('placeF').textContent='2º'}else{$('placeL').textContent='2º';$('placeF').textContent='1º'}
+}requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+</script>
+</body></html>
